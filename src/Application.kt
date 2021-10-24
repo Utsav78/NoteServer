@@ -1,6 +1,10 @@
 package com.example
 
+import com.example.authentication.JwtService
+import com.example.authentication.hash
+import com.example.data.model.User
 import com.example.repository.DatabaseFactory
+import com.example.repository.repo
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.request.*
@@ -16,6 +20,13 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     DatabaseFactory.init()
+    val db = repo()
+    val jwtService = JwtService()
+    val hashFunction = {s:String -> hash(s)}
+
+
+
+
     install(Authentication) {
     }
 
@@ -43,6 +54,16 @@ fun Application.module(testing: Boolean = false) {
         delete("/notes") {
             val body = call.receive<String>()
             call.respond(body)
+
+        }
+
+        get("/token") {
+            val email = call.request.queryParameters["email"]!!
+            val password = call.request.queryParameters["password"]!!
+            val username = call.request.queryParameters["username"]!!
+
+            val user = User(email,hashFunction(password),username)
+            call.respond(jwtService.generateToken(user))
 
         }
     }
