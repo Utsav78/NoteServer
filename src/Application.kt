@@ -5,6 +5,7 @@ import com.example.authentication.hash
 import com.example.data.model.User
 import com.example.repository.DatabaseFactory
 import com.example.repository.repo
+import com.example.routes.userRoutes
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.request.*
@@ -13,12 +14,13 @@ import io.ktor.http.*
 import io.ktor.auth.*
 import io.ktor.gson.*
 import io.ktor.features.*
+import io.ktor.locations.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+fun Application.module(testing : Boolean = false) {
     DatabaseFactory.init()
     val db = repo()
     val jwtService = JwtService()
@@ -35,10 +37,16 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    install(Locations)
+
     routing {
         get("/") {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
+
+        userRoutes(db, jwtService, hashFunction)
+
+
 
         get("/json/gson") {
             call.respond(mapOf("hello" to "world"))
