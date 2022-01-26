@@ -59,11 +59,11 @@ fun Application.module(testing: Boolean = false) {
 
         }
 
-//        delete("/notes") {
-//            val body = call.receive<String>()
-//            call.respond(body)
-//
-//        }
+        delete("/notes") {
+            val body = call.receive<String>()
+            call.respond(body)
+
+        }
 
         get("/token") {
             val email = call.request.queryParameters["email"]!!
