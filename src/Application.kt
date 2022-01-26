@@ -20,11 +20,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(testing : Boolean = false) {
+fun Application.module(testing: Boolean = false) {
     DatabaseFactory.init()
     val db = repo()
     val jwtService = JwtService()
-    val hashFunction = {s:String -> hash(s)}
+    val hashFunction = { s: String -> hash(s) }
 
 
 
@@ -59,18 +59,18 @@ fun Application.module(testing : Boolean = false) {
 
         }
 
-        delete("/notes") {
-            val body = call.receive<String>()
-            call.respond(body)
-
-        }
+//        delete("/notes") {
+//            val body = call.receive<String>()
+//            call.respond(body)
+//
+//        }
 
         get("/token") {
             val email = call.request.queryParameters["email"]!!
             val password = call.request.queryParameters["password"]!!
             val username = call.request.queryParameters["username"]!!
 
-            val user = User(email,hashFunction(password),username)
+            val user = User(email, hashFunction(password), username)
             call.respond(jwtService.generateToken(user))
 
         }
